@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>WebSocket Demo</title>
+</head>
+<body>
+<h1>WebSocket Demo</h1>
+<form>
+    <label for="addressInput">WebSocket Address:</label>
+    <input type="text" id="addressInput" value="ws://localhost:8080/WebsocketsDemo_war_exploded/example" style="width: 400px;">
+    <button type="button" id="connectButton">Connect</button>
+    <button type="button" id="disconnectButton" disabled>Disconnect</button>
+</form>
+<div id="messageInputDiv" style="display: none;">
+    <form>
+        <label for="messageInput">Send a message:</label>
+        <input type="text" id="messageInput" placeholder="Type your message here" style="width: 400px;">
+        <button type="submit" id="sendButton">Send</button>
+    </form>
+</div>
+<div id="messages"></div>
+
+<script>
+    let socket;
+    const addressInput = document.getElementById('addressInput');
+    const connectButton = document.getElementById('connectButton');
+    const disconnectButton = document.getElementById('disconnectButton');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const messages = document.getElementById('messages');
+    const messageInputDiv = document.getElementById('messageInputDiv');
+
+    connectButton.addEventListener('click', event => {
+        event.preventDefault();
+        const address = addressInput.value;
+        socket = new WebSocket(address);
+
+        socket.addEventListener('open', () => {
+            messages.innerHTML = '';
+            messages.style.display = 'block';
+            messageInputDiv.style.display = 'block';
+            connectButton.disabled = true;
+            addressInput.disabled = true;
+            disconnectButton.disabled = false;
+        });
+
+        socket.addEventListener('message', event => {
+            const message = document.createElement('div');
+            message.innerText = event.data;
+            messages.appendChild(message);
+        });
+
+        socket.addEventListener('close', () => {
+            connectButton.disabled = false;
+            addressInput.disabled = false;
+            disconnectButton.disabled = true;
+        });
+
+        socket.addEventListener('error', event => {
+            console.error('WebSocket error: ' + event);
+        });
+    });
+
+    disconnectButton.addEventListener('click', event => {
+        event.preventDefault();
+        socket.close();
+        connectButton.disabled = false;
+        addressInput.disabled = false;
+        disconnectButton.disabled = true;
+    });
+
+    sendButton.addEventListener('click', event => {
+        event.preventDefault();
+        const message = messageInput.value;
+        socket.send(message);
+        messageInput.value = '';
+    });
+</script>
+</body>
+</html>

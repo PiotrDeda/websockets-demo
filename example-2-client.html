@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Chat Demo</title>
+</head>
+<body>
+<h1>Chat Demo</h1>
+<form>
+    <label for="addressInput">WebSocket Address:</label>
+    <input type="text" id="addressInput" value="ws://localhost:8080/WebsocketsDemo_war_exploded/chat" style="width: 400px;">
+    <label for="usernameInput">Username:</label>
+    <input type="text" id="usernameInput" style="width: 200px;">
+    <button type="button" id="connectButton">Connect</button>
+    <button type="button" id="disconnectButton" disabled>Disconnect</button>
+</form>
+<div id="messageInputDiv" style="display: none;">
+    <form>
+        <label for="colorInput">Select color:</label>
+        <input type="color" id="colorInput" value="#000000">
+        <label for="messageInput">Send a message:</label>
+        <input type="text" id="messageInput" placeholder="Type your message here" style="width: 400px;">
+        <button type="submit" id="sendButton">Send</button>
+    </form>
+</div>
+<div id="messages"></div>
+
+<script>
+    let socket;
+    const addressInput = document.getElementById('addressInput');
+    const usernameInput = document.getElementById('usernameInput');
+    const connectButton = document.getElementById('connectButton');
+    const disconnectButton = document.getElementById('disconnectButton');
+    const colorInput = document.getElementById('colorInput');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const messages = document.getElementById('messages');
+    const messageInputDiv = document.getElementById('messageInputDiv');
+
+    connectButton.addEventListener('click', event => {
+        event.preventDefault();
+        const address = addressInput.value;
+        const username = usernameInput.value;
+        socket = new WebSocket(`${address}/${encodeURIComponent(username)}`);
+
+        socket.addEventListener('open', () => {
+            messages.innerHTML = '';
+            messages.style.display = 'block';
+            messageInputDiv.style.display = 'block';
+            connectButton.disabled = true;
+            addressInput.disabled = true;
+            usernameInput.disabled = true;
+            disconnectButton.disabled = false;
+        });
+
+        socket.addEventListener('message', event => {
+            const data = JSON.parse(event.data);
+            const message = document.createElement('div');
+            message.innerText = data.message;
+            message.style.color = data.textColor;
+            messages.appendChild(message);
+        });
+
+        socket.addEventListener('close', () => {
+            connectButton.disabled = false;
+            addressInput.disabled = false;
+            usernameInput.disabled = false;
+            disconnectButton.disabled = true;
+        });
+
+        socket.addEventListener('error', event => {
+            console.error('WebSocket error: ' + event);
+        });
+    });
+
+    disconnectButton.addEventListener('click', event => {
+        event.preventDefault();
+        socket.close();
+        connectButton.disabled = false;
+        addressInput.disabled = false;
+        usernameInput.disabled = false;
+        disconnectButton.disabled = true;
+    });
+
+    sendButton.addEventListener('click', event => {
+        event.preventDefault();
+        const message = messageInput.value;
+        const color = colorInput.value;
+        const data = JSON.stringify({ message: message, textColor: color });
+        socket.send(data);
+        messageInput.value = '';
+    });
+</script>
+</body>
+</html>
