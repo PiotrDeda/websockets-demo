@@ -8,29 +8,25 @@ import java.io.IOException;
 @ServerEndpoint("/example")
 public class ExampleWebsocket
 {
-	private Session session;
-
 	@OnOpen
-	public void onOpen(Session newSession) throws IOException
+	public void onOpen(Session session) throws IOException
 	{
-		session = newSession;
 		String message = "WebSocket connection opened for session: " + session.getId();
 		System.out.println(message);
-		this.session.getBasicRemote().sendText(message);
+		session.getBasicRemote().sendText(message);
 	}
 
 	@OnMessage
-	public void onMessage(String message, Session session) throws IOException
+	public void onMessage(Session session, String message) throws IOException
 	{
 		System.out.println("Received message: " + message);
 		session.getBasicRemote().sendText("[Echo] " + message);
 	}
 
 	@OnClose
-	public void onClose() throws IOException {
+	public void onClose(Session session) throws IOException {
 		System.out.println("WebSocket connection closed.");
 		session.getBasicRemote().sendText("WebSocket connection closed."); // throws java.lang.IllegalStateException
-		System.out.println("onClose end");
 	}
 
 	@OnError

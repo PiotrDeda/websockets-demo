@@ -61,19 +61,19 @@
         });
     });
 
+    sendButton.addEventListener('click', event => {
+        event.preventDefault();
+        const message = messageInput.value;
+        socket.send(message);
+        messageInput.value = '';
+    });
+
     disconnectButton.addEventListener('click', event => {
         event.preventDefault();
         socket.close();
         connectButton.disabled = false;
         addressInput.disabled = false;
         disconnectButton.disabled = true;
-    });
-
-    sendButton.addEventListener('click', event => {
-        event.preventDefault();
-        const message = messageInput.value;
-        socket.send(message);
-        messageInput.value = '';
     });
 </script>
 </body>
