@@ -72,15 +72,6 @@
         });
     });
 
-    disconnectButton.addEventListener('click', event => {
-        event.preventDefault();
-        socket.close();
-        connectButton.disabled = false;
-        addressInput.disabled = false;
-        usernameInput.disabled = false;
-        disconnectButton.disabled = true;
-    });
-
     sendButton.addEventListener('click', event => {
         event.preventDefault();
         const message = messageInput.value;
@@ -88,6 +79,15 @@
         const data = JSON.stringify({ message: message, textColor: color });
         socket.send(data);
         messageInput.value = '';
+    });
+
+    disconnectButton.addEventListener('click', event => {
+        event.preventDefault();
+        socket.close();
+        connectButton.disabled = false;
+        addressInput.disabled = false;
+        usernameInput.disabled = false;
+        disconnectButton.disabled = true;
     });
 </script>
 </body>
