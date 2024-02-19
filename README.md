@@ -1,5 +1,12 @@
 # Websockets Demo
 
+## Authors
+
+* [Piotr Deda](https://github.com/PiotrDeda)
+* [Adam Łaba](https://github.com/unlvy)
+
+## Installation
+
 1. Install requirements:
 	1. IntelliJ Idea
 	2. Java 17 JDK
